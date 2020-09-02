@@ -1,8 +1,8 @@
 #pragma once
 #include "Types.h"
 #include "Core6502.h"
-
-template <long addressSpace = 0xffff>
+class Core6502;
+template <long addressSpace>
 class Bus
 {
 public:

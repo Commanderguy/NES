@@ -5,3 +5,5 @@ typedef unsigned int u32;
 typedef unsigned long u64;
 typedef unsigned short pointer;
 typedef pointer ptr;
+typedef u8 PagePointer;
+typedef PagePointer pptr;
