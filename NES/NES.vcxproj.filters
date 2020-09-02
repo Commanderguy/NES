@@ -15,24 +15,24 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Bus.cpp">
-      <Filter>Quelldateien</Filter>
-    </ClCompile>
     <ClCompile Include="Core6502.cpp">
       <Filter>Quelldateien</Filter>
     </ClCompile>
     <ClCompile Include="TestMain.cpp">
       <Filter>Quelldateien</Filter>
     </ClCompile>
+    <ClCompile Include="Bus.cpp">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Bus.h">
-      <Filter>Headerdateien</Filter>
-    </ClInclude>
     <ClInclude Include="Types.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
     <ClInclude Include="Core6502.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="Bus.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
   </ItemGroup>

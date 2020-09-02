@@ -1,20 +1,11 @@
 #include "Bus.h"
-template<long addressSpace>
-inline u8& Bus<addressSpace>::Read(ptr Address)
+
+u8 Bus::Read(ptr loc)
 {
-	return addresses[Address];
+	return PLACEHOLDERRAM[loc];
 }
 
-template<long addressSpace>
-void Bus<addressSpace>::Write(ptr Address, u8 value)
+void Bus::Write(ptr loc, u8 data)
 {
-	if (Address > addressSpace)
-		return;
-	addresses[Address] = value;
-}
-
-template<long addressSpace>
-Bus<addressSpace>::Bus()
-{
-	CPU = Core6502(this);
+	PLACEHOLDERRAM[loc] = data;
 }

@@ -1,5 +1,6 @@
 #pragma once
 #include "Bus.h"
+#include "Types.h"
 // This #define command defines the Template for opcodes and make the code more readable
 // Every opcode definition consists of an function that executes and then returns the cycles it took.
 #define OPCODE(x) u8 x();
@@ -21,7 +22,6 @@ public:
 	void Toggle() { data ^= 1 << bitPlace; }
 };
 
-template <long addressSpace>
 class Bus;
 
 
@@ -39,6 +39,17 @@ union CPUFlags6502
 	Bit<7> N;
 };
 
+
+union ToPtr
+{
+	ptr p;
+	struct
+	{
+		u8 hi;
+		u8 lo;
+	};
+};
+
 class Core6502
 {
 public:
@@ -48,10 +59,10 @@ public:
 	/// </summary>
 	u8 cycles = 0;
 	ptr ProgramCounter = 0xC000;
-	ptr addressRelative = 0x0000;
+	ptr addressOperate = 0x0000;
 	pptr StackPtr;
 	u8 StatusReg = 0x00;
-	Core6502(Bus<0xFFFF>* b, ptr ProgramCount);
+	Core6502(Bus* b, ptr ProgramCount);
 
 	void Tick()
 	{
@@ -90,23 +101,25 @@ public:
 	/*	f	*/	p(XXX), p(XXX), p(XXX), p(XXX), p(XXX), p(XXX), p(XXX), p(XXX), p(XXX), p(XXX), p(XXX), p(XXX), p(XXX), p(XXX), p(XXX), p(XXX)
 	};
 
+
+	// Addressingmode matrix
 	void(Core6502::* AddressingMode[256])() =
 	{//			0		1		2		3		4		5		6		7		8		9		a		b		c		d		e		f
-	/*	0	*/	p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP),
+	/*	0	*/	p(IMP), p(IMP), p(IMP), p(IMP), p(_ZP), p(_ZP), p(_ZP), p(_ZP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP),
 	/*	1	*/	p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP),
-	/*	2	*/	p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP),
+	/*	2	*/	p(IMP), p(IMP), p(IMP), p(IMP), p(_ZP), p(_ZP), p(_ZP), p(_ZP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP),
 	/*	3	*/	p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP),
-	/*	4	*/	p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP),
+	/*	4	*/	p(IMP), p(IMP), p(IMP), p(IMP), p(_ZP), p(_ZP), p(_ZP), p(_ZP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP),
 	/*	5	*/	p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP),
-	/*	6	*/	p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP),
+	/*	6	*/	p(IMP), p(IMP), p(IMP), p(IMP), p(_ZP), p(_ZP), p(_ZP), p(_ZP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP),
 	/*	7	*/	p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP),
-	/*	8	*/	p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP),
+	/*	8	*/	p(IMP), p(IMP), p(IMP), p(IMP), p(_ZP), p(_ZP), p(_ZP), p(_ZP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP),
 	/*	9	*/	p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP),
-	/*	a	*/	p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP),
+	/*	a	*/	p(IMP), p(IMP), p(IMP), p(IMP), p(_ZP), p(_ZP), p(_ZP), p(_ZP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP),
 	/*	b	*/	p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP),
-	/*	c	*/	p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP),
+	/*	c	*/	p(IMP), p(IMP), p(IMP), p(IMP), p(_ZP), p(_ZP), p(_ZP), p(_ZP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP),
 	/*	d	*/	p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP),
-	/*	e	*/	p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP),
+	/*	e	*/	p(IMP), p(IMP), p(IMP), p(IMP), p(_ZP), p(_ZP), p(_ZP), p(_ZP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP),
 	/*	f	*/	p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP)
 	};
 
@@ -115,10 +128,22 @@ protected:
 
 
 private:
-	Bus<0xFFFF>* _bus;
+	Bus* _bus;
 	// ---------------- Addressing Modes -----------------------
 	
 	MODE(IMP)
+	MODE(IMM)
+	MODE(AAM)
+	MODE(_ZP)
+	MODE(ABS)
+	MODE(REL)
+	MODE(IND)
+	MODE(IDX)
+	MODE(IDY)
+	MODE(ZPX)
+	MODE(ZPY)
+	MODE(ABX)
+	MODE(ABY)
 	
 	// --------------------- Opcodes ---------------------------
 
