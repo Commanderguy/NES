@@ -3,8 +3,8 @@
 #include "Types.h"
 // This #define command defines the Template for opcodes and make the code more readable
 // Every opcode definition consists of an function that executes and then returns the cycles it took.
-#define OPCODE(x) u8 x();
-#define MODE(x) void x();
+#define OPCODE(x) void x();
+#define MODE(x) bool x();
 // This declares a function pointer to a member of the cpu. It's just for better code readability
 #define p(x) &Core6502:: ## x
 
@@ -58,17 +58,22 @@ public:
 	/// if the cycles count == 0.
 	/// </summary>
 	u8 cycles = 0;
+	u8 curOp = 0;
 	ptr ProgramCounter = 0xC000;
 	ptr addressOperate = 0x0000;
+	u8 adrContent;
 	pptr StackPtr;
-	u8 StatusReg = 0x00;
+	CPUFlags6502 StatusReg;
 	Core6502(Bus* b, ptr ProgramCount);
 
 	void Tick()
 	{
 		if (cycles == 0)
 		{
-			cycles = (this->*codes[ProgramCounter])();
+			curOp = _bus->Read(ProgramCounter);
+			ProgramCounter++;
+			(this->*codes[curOp])();
+			(this->*AddressingMode[curOp])();
 		}
 		cycles--;
 	}
@@ -81,7 +86,7 @@ public:
 	u8 y; // The Y-Register
 
 	// ------------------ Opcode Matrix ------------------------
-	u8 (Core6502::*codes[256])() =
+	void (Core6502::*codes[256])() =
 	{//			0		1		2		3		4		5		6		7		8		9		a		b		c		d		e		f
 	/*	0	*/	p(XXX), p(XXX), p(XXX), p(XXX), p(XXX), p(XXX), p(XXX), p(XXX), p(XXX), p(XXX), p(XXX), p(XXX), p(XXX), p(XXX), p(XXX), p(XXX),
 	/*	1	*/	p(XXX), p(XXX), p(XXX), p(XXX), p(XXX), p(XXX), p(XXX), p(XXX), p(XXX), p(XXX), p(XXX), p(XXX), p(XXX), p(XXX), p(XXX), p(XXX),
@@ -103,26 +108,27 @@ public:
 
 
 	// Addressingmode matrix
-	void(Core6502::* AddressingMode[256])() =
+	bool(Core6502::* AddressingMode[256])() =
 	{//			0		1		2		3		4		5		6		7		8		9		a		b		c		d		e		f
-	/*	0	*/	p(IMP), p(IMP), p(IMP), p(IMP), p(_ZP), p(_ZP), p(_ZP), p(_ZP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP),
-	/*	1	*/	p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP),
-	/*	2	*/	p(IMP), p(IMP), p(IMP), p(IMP), p(_ZP), p(_ZP), p(_ZP), p(_ZP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP),
-	/*	3	*/	p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP),
-	/*	4	*/	p(IMP), p(IMP), p(IMP), p(IMP), p(_ZP), p(_ZP), p(_ZP), p(_ZP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP),
-	/*	5	*/	p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP),
-	/*	6	*/	p(IMP), p(IMP), p(IMP), p(IMP), p(_ZP), p(_ZP), p(_ZP), p(_ZP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP),
-	/*	7	*/	p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP),
-	/*	8	*/	p(IMP), p(IMP), p(IMP), p(IMP), p(_ZP), p(_ZP), p(_ZP), p(_ZP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP),
-	/*	9	*/	p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP),
-	/*	a	*/	p(IMP), p(IMP), p(IMP), p(IMP), p(_ZP), p(_ZP), p(_ZP), p(_ZP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP),
-	/*	b	*/	p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP),
-	/*	c	*/	p(IMP), p(IMP), p(IMP), p(IMP), p(_ZP), p(_ZP), p(_ZP), p(_ZP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP),
-	/*	d	*/	p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP),
-	/*	e	*/	p(IMP), p(IMP), p(IMP), p(IMP), p(_ZP), p(_ZP), p(_ZP), p(_ZP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP),
-	/*	f	*/	p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP), p(IMP)
+	/*	0	*/	p(IMP), p(IDX), p(IMP), p(IDX), p(_ZP), p(_ZP), p(_ZP), p(_ZP), p(IMP), p(IMM), p(IMP), p(IMM), p(ABS), p(ABS), p(ABS), p(ABS),
+	/*	1	*/	p(REL), p(IDY), p(IMP), p(IDY), p(ZPX), p(ZPX), p(ZPX), p(ZPX), p(IMP), p(ABY), p(IMP), p(ABY), p(ABX), p(ABX), p(ABX), p(ABX),
+	/*	2	*/	p(ABS), p(IDX), p(IMP), p(IDX), p(_ZP), p(_ZP), p(_ZP), p(_ZP), p(IMP), p(IMM), p(IMP), p(IMM), p(ABS), p(ABS), p(ABS), p(ABS),
+	/*	3	*/	p(REL), p(IDY), p(IMP), p(IDY), p(ZPX), p(ZPX), p(ZPX), p(ZPX), p(IMP), p(ABY), p(IMP), p(ABY), p(ABX), p(ABX), p(ABX), p(ABX),
+	/*	4	*/	p(IMP), p(IDX), p(IMP), p(IDX), p(_ZP), p(_ZP), p(_ZP), p(_ZP), p(IMP), p(IMM), p(IMP), p(IMM), p(ABS), p(ABS), p(ABS), p(ABS),
+	/*	5	*/	p(REL), p(IDY), p(IMP), p(IDY), p(ZPX), p(ZPX), p(ZPX), p(ZPX), p(IMP), p(ABY), p(IMP), p(ABY), p(ABX), p(ABX), p(ABX), p(ABX),
+	/*	6	*/	p(IMP), p(IDX), p(IMP), p(IDX), p(_ZP), p(_ZP), p(_ZP), p(_ZP), p(IMP), p(IMM), p(IMP), p(IMM), p(IND), p(ABS), p(ABS), p(ABS),
+	/*	7	*/	p(REL), p(IDY), p(IMP), p(IDY), p(ZPX), p(ZPX), p(ZPX), p(ZPX), p(IMP), p(ABY), p(IMP), p(ABY), p(ABX), p(ABX), p(ABX), p(ABX),
+	/*	8	*/	p(IMM), p(IDX), p(IMM), p(IDX), p(_ZP), p(_ZP), p(_ZP), p(_ZP), p(IMP), p(IMM), p(IMP), p(IMM), p(ABS), p(ABS), p(ABS), p(ABS),
+	/*	9	*/	p(REL), p(IDY), p(IMP), p(IDY), p(ZPX), p(ZPX), p(ZPY), p(ZPY), p(IMP), p(ABY), p(IMP), p(ABY), p(ABX), p(ABX), p(ABY), p(ABY),
+	/*	a	*/	p(IMM), p(IDX), p(IMM), p(IDX), p(_ZP), p(_ZP), p(_ZP), p(_ZP), p(IMP), p(IMM), p(IMP), p(IMM), p(ABS), p(ABS), p(ABS), p(ABS),
+	/*	b	*/	p(REL), p(IDY), p(IMP), p(IDY), p(ZPX), p(ZPX), p(ZPY), p(ZPY), p(IMP), p(ABY), p(IMP), p(ABY), p(ABX), p(ABX), p(ABY), p(ABY),
+	/*	c	*/	p(IMM), p(IDX), p(IMM), p(IDX), p(_ZP), p(_ZP), p(_ZP), p(_ZP), p(IMP), p(IMM), p(IMP), p(IMM), p(ABS), p(ABS), p(ABS), p(ABS),
+	/*	d	*/	p(REL), p(IDY), p(IMP), p(IDY), p(ZPX), p(ZPX), p(ZPX), p(ZPX), p(IMP), p(ABY), p(IMP), p(ABY), p(ABX), p(ABX), p(ABX), p(ABX),
+	/*	e	*/	p(IMM), p(IDX), p(IMM), p(IDX), p(_ZP), p(_ZP), p(_ZP), p(_ZP), p(IMP), p(IMM), p(IMP), p(IMM), p(ABS), p(ABS), p(ABS), p(ABS),
+	/*	f	*/	p(REL), p(IDY), p(IMP), p(IDY), p(ZPX), p(ZPX), p(ZPX), p(ZPX), p(IMP), p(ABY), p(IMP), p(ABY), p(ABX), p(ABX), p(ABX), p(ABX)
 	};
 
+	
 
 protected:
 
@@ -153,6 +159,40 @@ private:
 	/// <returns></returns>
 	OPCODE(XXX)
 	OPCODE(NOP)
+	OPCODE(ORA)
+	OPCODE(AND)
+	OPCODE(EOR)
+	OPCODE(ADC)
+	OPCODE(SBC)
+	OPCODE(CMP)
+	OPCODE(CPX)
+	OPCODE(CPY)
+	OPCODE(DEC)
+	OPCODE(DEX)
+	OPCODE(DEY)
+	OPCODE(INC)
+	OPCODE(INX)
+	OPCODE(INY)
+	OPCODE(ASL)
+	OPCODE(ROL)
+	OPCODE(LSR)
+	OPCODE(ROR)
+	OPCODE(LDA)
+	OPCODE(STA)
+	OPCODE(LDX)
+	OPCODE(STX)
+	OPCODE(LDY)
+	OPCODE(STY)
+	OPCODE(TAX)
+	OPCODE(TXA)
+	OPCODE(TAY)
+	OPCODE(TYA)
+	OPCODE(TSX)
+	OPCODE(TXS)
+	OPCODE(PLA)
+	OPCODE(PHA)
+	OPCODE(PLP)
+	OPCODE(PHP)
 };
 
 #undef OPCODE
