@@ -4,7 +4,7 @@
 // This #define command defines the Template for opcodes and make the code more readable
 // Every opcode definition consists of an function that executes and then returns the cycles it took.
 #define OPCODE(x) void x();
-#define MODE(x) bool x();
+#define MODE(x) void x();
 // This declares a function pointer to a member of the cpu. It's just for better code readability
 #define p(x) &Core6502:: ## x
 
@@ -35,6 +35,7 @@ union CPUFlags6502
 	Bit<1> Z;
 	Bit<2> I;
 	Bit<3> D;
+	Bit<4> B;
 	Bit<6> V;
 	Bit<7> N;
 };
@@ -108,7 +109,7 @@ public:
 
 
 	// Addressingmode matrix
-	bool(Core6502::* AddressingMode[256])() =
+	void(Core6502::* AddressingMode[256])() =
 	{//			0		1		2		3		4		5		6		7		8		9		a		b		c		d		e		f
 	/*	0	*/	p(IMP), p(IDX), p(IMP), p(IDX), p(_ZP), p(_ZP), p(_ZP), p(_ZP), p(IMP), p(IMM), p(IMP), p(IMM), p(ABS), p(ABS), p(ABS), p(ABS),
 	/*	1	*/	p(REL), p(IDY), p(IMP), p(IDY), p(ZPX), p(ZPX), p(ZPX), p(ZPX), p(IMP), p(ABY), p(IMP), p(ABY), p(ABX), p(ABX), p(ABX), p(ABX),
@@ -193,6 +194,27 @@ private:
 	OPCODE(PHA)
 	OPCODE(PLP)
 	OPCODE(PHP)
+	OPCODE(BPL)
+	OPCODE(BMI)
+	OPCODE(BVC)
+	OPCODE(BVS)
+	OPCODE(BCC)
+	OPCODE(BCS)
+	OPCODE(BNE)
+	OPCODE(BEQ)
+	OPCODE(CLC)
+	OPCODE(SEC)
+	OPCODE(CLD)
+	OPCODE(SED)
+	OPCODE(CLI)
+	OPCODE(SEI)
+	OPCODE(CLV)
+	OPCODE(BIT)
+	OPCODE(JMP)
+	OPCODE(JSR)
+	OPCODE(RTS)
+	OPCODE(BRK)
+	OPCODE(RTI)
 };
 
 #undef OPCODE

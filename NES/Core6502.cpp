@@ -1,6 +1,6 @@
 #include "Core6502.h"
 #define OPCODE(x) void Core6502:: ## x()
-#define MODE(x) bool Core6502:: ## x()
+#define MODE(x) void Core6502:: ## x()
 
 Core6502::Core6502(Bus* b, ptr ProgramCounter):
 _bus{ b },
@@ -494,7 +494,7 @@ OPCODE(TXS)
 OPCODE(PLA)
 {
 	StackPtr++;
-	a = _bus->Read(StackPtr);
+	a = _bus->Read(0x0100 + StackPtr);
 	if (a == 0)
 		StatusReg.Z.Set();
 	if (a & 128)
@@ -504,7 +504,7 @@ OPCODE(PLA)
 
 OPCODE(PHA)
 {
-	_bus->Write(StackPtr, a);
+	_bus->Write(0x0100 + StackPtr, a);
 	StackPtr--;
 }
 
@@ -512,15 +512,190 @@ OPCODE(PHA)
 OPCODE(PLP)
 {
 	StackPtr++;
-	StatusReg.data = _bus->Read(StackPtr);
+	StatusReg.data = _bus->Read(0x0100 + StackPtr);
 }
 
 
 OPCODE(PHP)
 {
-	_bus->Write(StackPtr, StatusReg.data);
+	_bus->Write(0x0100 + StackPtr, StatusReg.data);
 	StackPtr--;
 }
+
+
+OPCODE(BPL)
+{
+	if (!StatusReg.N.Get())
+		ProgramCounter = addressOperate;
+}
+
+OPCODE(BMI)
+{
+	if (StatusReg.N.Get())
+		ProgramCounter = addressOperate;
+}
+
+OPCODE(BVC)
+{
+	if (!StatusReg.V.Get())
+		ProgramCounter = addressOperate;
+}
+
+
+OPCODE(BVS)
+{
+	if (StatusReg.V.Get())
+		ProgramCounter = addressOperate;
+}
+
+
+OPCODE(BCC)
+{
+	if (!StatusReg.C.Get())
+		ProgramCounter = addressOperate;
+}
+
+
+OPCODE(BCS)
+{
+	if (StatusReg.C.Get())
+		ProgramCounter = addressOperate;
+}
+
+
+OPCODE(BNE)
+{
+	if (!StatusReg.Z.Get())
+		ProgramCounter = addressOperate;
+}
+
+OPCODE(BEQ)
+{
+	if (StatusReg.Z.Get())
+		ProgramCounter = addressOperate;
+}
+
+
+OPCODE(CLC)
+{
+	StatusReg.C.Clear();
+}
+
+
+OPCODE(SEC)
+{
+	StatusReg.C.Set();
+}
+
+OPCODE(CLD)
+{
+	StatusReg.D.Clear();
+}
+
+
+OPCODE(SED)
+{
+	StatusReg.D.Set();
+}
+
+
+OPCODE(CLI)
+{
+	StatusReg.I.Clear();
+}
+
+
+OPCODE(SEI)
+{
+	StatusReg.I.Set();
+}
+
+OPCODE(CLV)
+{
+	StatusReg.V.Clear();
+}
+
+
+OPCODE(BIT)
+{
+	u8 var = _bus->Read(addressOperate);
+	u8 tmp = a & var;
+	if(!tmp)
+		StatusReg.Z.Set();
+	if (var & (1 << 7))
+		StatusReg.N.Set();
+	if (var & (1 << 6))
+		StatusReg.V.Set();
+}
+
+
+OPCODE(JMP)
+{
+	if (curOp == 0x4C)
+		ProgramCounter = addressOperate;
+	else
+	{
+		ProgramCounter = _bus->Read(addressOperate);
+	}
+	
+}
+
+
+OPCODE(JSR)
+{
+	ProgramCounter--;
+
+	_bus->Write(0x0100 + StackPtr, (ProgramCounter >> 8) & 0x00FF);
+	StackPtr--;
+	_bus->Write(0x0100 + StackPtr, ProgramCounter & 0x00FF);
+	StackPtr--;
+	ProgramCounter = addressOperate;
+}
+
+
+OPCODE(RTS)
+{
+	ToPtr t;
+	StackPtr++;
+	t.lo = _bus->Read(0x0100 + StackPtr);
+	StackPtr++;
+	t.hi = _bus->Read(0x100 + StackPtr);
+	ProgramCounter = t.p;
+	ProgramCounter++;
+}
+
+
+OPCODE(BRK)
+{
+	ToPtr w;
+	w.p = ProgramCounter;
+	StatusReg.I.Set();
+	_bus->Write(0x100 + StackPtr, w.hi);
+	StackPtr--;
+	_bus->Write(0x100 + StackPtr, w.lo);
+	StackPtr--;
+	StatusReg.B.Set();
+	_bus->Write(0x100 + StackPtr, StatusReg.data);
+	StatusReg.B.Clear();
+	StackPtr--;
+
+	ProgramCounter = (u16)_bus->Read(0xFFFE) | ((u16)_bus->Read(0xFFFF) << 8);
+}
+
+
+OPCODE(RTI)
+{
+	StackPtr++;
+	StatusReg.data = _bus->Read(0x0100 + StackPtr);
+	StatusReg.B.Clear(); // About this line I'm not really sure.
+	ToPtr dest;
+	StackPtr++;
+	dest.lo = _bus->Read(0x100 + StackPtr);
+	StackPtr++;
+	dest.hi = _bus->Read(0x100 + StackPtr);
+	ProgramCounter = dest.p;
+}
+
 
 
 /// <summary>
