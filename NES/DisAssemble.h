@@ -27,16 +27,16 @@ const char* AMtoString(addressingMode);
 class DisAssemble
 {
 public:
-	friend std::ostream& operator<<(std::ostream& out, const DisAssemble& d);
 	const char* symbol;
 	addressingMode am;
 	const char* comment;
 	const char* arg;
 	//const u8 cycles;
-	const u8 size;
+	u8 size;
 	DisAssemble(u8 byte, u8 next[3]);
+	std::string _toString() const;
 private:
-	const char* _toString();
+	
 	u8 _nBytes[3];
 
 	static constexpr char symbols[256][4] =
@@ -67,7 +67,3 @@ private:
 protected:
 
 };
-std::ostream& operator<<(std::ostream & out, const DisAssemble& d)
-{
-	return out << d;
-}

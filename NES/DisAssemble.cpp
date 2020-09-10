@@ -3,6 +3,7 @@
 DisAssemble::DisAssemble(u8 byte, u8 next[3])
 {
     symbol = symbols[byte];
+    size = lenghttable[byte];
 }
 
 std::string hex(uint32_t n, uint8_t d)
@@ -13,12 +14,12 @@ std::string hex(uint32_t n, uint8_t d)
     return s;
 };
 
-const char* DisAssemble::_toString()
+std::string DisAssemble::_toString() const
 {
     std::string s = symbol;
     s += " ";
     // Wrap the arguments in the correct form.
-   char* buf;
+   ToPtr t;
     switch (am)
     {
     case imm: 
@@ -49,14 +50,12 @@ const char* DisAssemble::_toString()
         break;
     case oabs:
         s += "$";
-        ToPtr t;
         t.lo = _nBytes[0];
         t.hi = _nBytes[0];
         s += hex(t.p, 4);
         break;
     case abx:
         s += "$";
-        ToPtr t;
         t.lo = _nBytes[0];
         t.hi = _nBytes[0];
         s += hex(t.p, 4);
@@ -64,7 +63,6 @@ const char* DisAssemble::_toString()
         break;
     case aby:
         s += "$";
-        ToPtr t;
         t.lo = _nBytes[0];
         t.hi = _nBytes[1];
         s += hex(t.p, 4);
@@ -72,7 +70,6 @@ const char* DisAssemble::_toString()
         break;
     case ind:
         s += "($";
-        ToPtr t;
         t.lo = _nBytes[0];
         t.hi = _nBytes[1];
         s += hex(t.p, 4);
@@ -91,6 +88,5 @@ const char* DisAssemble::_toString()
         std::cout << "addressing mode " << am << "is not mapped yet" << std::endl;
     }
     // Assemble a comment containing all extra information.
-
-    return s.c_str();
+    return s;
 }
