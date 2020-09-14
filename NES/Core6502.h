@@ -8,6 +8,40 @@
 // This declares a function pointer to a member of the cpu. It's just for better code readability
 #define p(x) &Core6502:: ## x
 
+
+#ifdef _DEBUG
+// ---------------------- illegal opcodes ------------------------
+/*
+	These define statements enable the emulator to work without 
+	imlementing the illegal opcodes while still having them in the 
+	opcode matrix. They should be implemented for the final release.
+	This is definitly not the best solution, but it does the job for 
+	debug purposes. For a good emulator, these opcodes have to be 
+	impolemented, but most roms work without them.
+*/
+#define KIL XXX
+#define SLO XXX
+#define ANC XXX
+#define RLA XXX
+#define SRE XXX
+#define ALR XXX
+#define RRA XXX
+#define ARR XXX
+#define SAX XXX
+#define XAA XXX
+#define AHX XXX
+#define TAS XXX
+#define SHY XXX
+#define SHX XXX
+#define AHX XXX
+#define LAX XXX
+#define LAS XXX
+#define DCP XXX
+#define AXS XXX
+#define ISC XXX
+#endif
+
+
 /// <summary>
 /// The bit class is used to set, clear get, and toggle a bit in a union.
 /// </summary>
@@ -89,22 +123,22 @@ public:
 	// ------------------ Opcode Matrix ------------------------
 	void (Core6502::*codes[256])() =
 	{//			0		1		2		3		4		5		6		7		8		9		a		b		c		d		e		f
-	/*	0	*/	p(XXX), p(XXX), p(XXX), p(XXX), p(XXX), p(XXX), p(XXX), p(XXX), p(XXX), p(XXX), p(XXX), p(XXX), p(XXX), p(XXX), p(XXX), p(XXX),
-	/*	1	*/	p(XXX), p(XXX), p(XXX), p(XXX), p(XXX), p(XXX), p(XXX), p(XXX), p(XXX), p(XXX), p(XXX), p(XXX), p(XXX), p(XXX), p(XXX), p(XXX),
-	/*	2	*/	p(XXX), p(XXX), p(XXX), p(XXX), p(XXX), p(XXX), p(XXX), p(XXX), p(XXX), p(XXX), p(XXX), p(XXX), p(XXX), p(XXX), p(XXX), p(XXX),
-	/*	3	*/	p(XXX), p(XXX), p(XXX), p(XXX), p(XXX), p(XXX), p(XXX), p(XXX), p(XXX), p(XXX), p(XXX), p(XXX), p(XXX), p(XXX), p(XXX), p(XXX),
-	/*	4	*/	p(XXX), p(XXX), p(XXX), p(XXX), p(XXX), p(XXX), p(XXX), p(XXX), p(XXX), p(XXX), p(XXX), p(XXX), p(XXX), p(XXX), p(XXX), p(XXX),
-	/*	5	*/	p(XXX), p(XXX), p(XXX), p(XXX), p(XXX), p(XXX), p(XXX), p(XXX), p(XXX), p(XXX), p(XXX), p(XXX), p(XXX), p(XXX), p(XXX), p(XXX),
-	/*	6	*/	p(XXX), p(XXX), p(XXX), p(XXX), p(XXX), p(XXX), p(XXX), p(XXX), p(XXX), p(XXX), p(XXX), p(XXX), p(XXX), p(XXX), p(XXX), p(XXX),
-	/*	7	*/	p(XXX), p(XXX), p(XXX), p(XXX), p(XXX), p(XXX), p(XXX), p(XXX), p(XXX), p(XXX), p(XXX), p(XXX), p(XXX), p(XXX), p(XXX), p(XXX),
-	/*	8	*/	p(XXX), p(XXX), p(XXX), p(XXX), p(XXX), p(XXX), p(XXX), p(XXX), p(XXX), p(XXX), p(XXX), p(XXX), p(XXX), p(XXX), p(XXX), p(XXX),
-	/*	9	*/	p(XXX), p(XXX), p(XXX), p(XXX), p(XXX), p(XXX), p(XXX), p(XXX), p(XXX), p(XXX), p(XXX), p(XXX), p(XXX), p(XXX), p(XXX), p(XXX),
-	/*	a	*/	p(XXX), p(XXX), p(XXX), p(XXX), p(XXX), p(XXX), p(XXX), p(XXX), p(XXX), p(XXX), p(XXX), p(XXX), p(XXX), p(XXX), p(XXX), p(XXX),
-	/*	b	*/	p(XXX), p(XXX), p(XXX), p(XXX), p(XXX), p(XXX), p(XXX), p(XXX), p(XXX), p(XXX), p(XXX), p(XXX), p(XXX), p(XXX), p(XXX), p(XXX),
-	/*	c	*/	p(XXX), p(XXX), p(XXX), p(XXX), p(XXX), p(XXX), p(XXX), p(XXX), p(XXX), p(XXX), p(XXX), p(XXX), p(XXX), p(XXX), p(XXX), p(XXX),
-	/*	d	*/	p(XXX), p(XXX), p(XXX), p(XXX), p(XXX), p(XXX), p(XXX), p(XXX), p(XXX), p(XXX), p(XXX), p(XXX), p(XXX), p(XXX), p(XXX), p(XXX),
-	/*	e	*/	p(XXX), p(XXX), p(XXX), p(XXX), p(XXX), p(XXX), p(XXX), p(XXX), p(XXX), p(XXX), p(NOP), p(XXX), p(XXX), p(XXX), p(XXX), p(XXX),
-	/*	f	*/	p(XXX), p(XXX), p(XXX), p(XXX), p(XXX), p(XXX), p(XXX), p(XXX), p(XXX), p(XXX), p(XXX), p(XXX), p(XXX), p(XXX), p(XXX), p(XXX)
+	/*	0	*/	p(BRK), p(ORA), p(KIL), p(SLO), p(NOP), p(ORA), p(ASL), p(SLO), p(PHP), p(ORA), p(ASL), p(ANC), p(NOP), p(ORA), p(ASL), p(SLO),
+	/*	1	*/	p(BPL), p(ORA), p(KIL), p(SLO), p(NOP), p(ORA), p(ASL), p(SLO), p(CLC), p(ORA), p(NOP), p(SLO), p(NOP), p(ORA), p(ASL), p(SLO),
+	/*	2	*/	p(JSR), p(AND), p(KIL), p(RLA), p(BIT), p(AND), p(ROL), p(RLA), p(PLP), p(AND), p(ROL), p(ANC), p(BIT), p(AND), p(ROL), p(RLA),
+	/*	3	*/	p(BMI), p(AND), p(KIL), p(RLA), p(NOP), p(AND), p(ROL), p(RLA), p(SEC), p(AND), p(NOP), p(RLA), p(NOP), p(AND), p(ROL), p(RLA),
+	/*	4	*/	p(RTI), p(EOR), p(KIL), p(SRE), p(NOP), p(EOR), p(LSR), p(SRE), p(PHA), p(EOR), p(LSR), p(ALR), p(JMP), p(EOR), p(LSR), p(SRE),
+	/*	5	*/	p(BVC), p(EOR), p(KIL), p(SRE), p(NOP), p(EOR), p(LSR), p(SRE), p(CLI), p(EOR), p(NOP), p(SRE), p(NOP), p(EOR), p(LSR), p(SRE),
+	/*	6	*/	p(RTS), p(ADC), p(KIL), p(RRA), p(NOP), p(ADC), p(ROR), p(RRA), p(PLA), p(ADC), p(ROR), p(ARR), p(JMP), p(ADC), p(ROR), p(RRA),
+	/*	7	*/	p(BVS), p(ADC), p(KIL), p(RRA), p(NOP), p(ADC), p(ROR), p(RRA), p(SEI), p(ADC), p(NOP), p(RRA), p(NOP), p(ADC), p(ROR), p(RRA),
+	/*	8	*/	p(NOP), p(STA), p(NOP), p(SAX), p(STY), p(STA), p(STX), p(SAX), p(DEY), p(NOP), p(TXA), p(XAA), p(STY), p(STA), p(STX), p(SAX),
+	/*	9	*/	p(BCC), p(STA), p(KIL), p(AHX), p(STY), p(STA), p(STX), p(SAX), p(TYA), p(STA), p(TSX), p(TAS), p(SHY), p(STA), p(SHX), p(AHX),
+	/*	a	*/	p(LDY), p(LDA), p(LDX), p(LAX), p(LDY), p(LDA), p(LDX), p(LAX), p(TAY), p(LDA), p(TAX), p(LAX), p(LDY), p(LDA), p(LDX), p(LAX),
+	/*	b	*/	p(BCS), p(LDA), p(KIL), p(LAX), p(LDY), p(LDA), p(LDX), p(LAX), p(CLV), p(LDA), p(TAX), p(LAS), p(LDY), p(LDA), p(LDX), p(LAX),
+	/*	c	*/	p(CPY), p(CMP), p(NOP), p(DCP), p(CPY), p(CMP), p(DEC), p(DCP), p(INY), p(CMP), p(DEX), p(AXS), p(CPY), p(CMP), p(DEC), p(DCP),
+	/*	d	*/	p(BNE), p(CMP), p(KIL), p(DCP), p(NOP), p(CMP), p(DEC), p(DCP), p(CLD), p(CMP), p(NOP), p(DCP), p(NOP), p(CMP), p(DEC), p(DCP),
+	/*	e	*/	p(CPX), p(SBC), p(NOP), p(ISC), p(CPX), p(SBC), p(INC), p(ISC), p(INX), p(SBC), p(NOP), p(SBC), p(CPX), p(SBC), p(INC), p(ISC),
+	/*	f	*/	p(BEQ), p(SBC), p(KIL), p(ISC), p(NOP), p(SBC), p(INC), p(ISC), p(SED), p(SBC), p(NOP), p(ISC), p(NOP), p(SBC), p(INC), p(ISC)
 	};
 
 
