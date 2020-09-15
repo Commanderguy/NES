@@ -6,7 +6,10 @@
 
 int main()
 {
-	iNesFile smb("cpu.nes");
-	std::cout << smb.HEADER.header.ToString();
+	{
+		iNesFile smb("C:/Users/johan/source/repos/NES/x64/Debug/roms/Super Mario Bros.nes");
+		std::cout << smb.HEADER.header.ToString();
+		std::cin.get();
+	}
 	std::cin.get();
 }

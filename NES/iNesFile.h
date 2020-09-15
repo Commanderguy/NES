@@ -9,6 +9,16 @@
 #include "Types.h"
 #include "Bit.h"
 
+union TwoSetShort
+{
+	ptr o;
+	struct
+	{
+		u8 hi;
+		u8 lo;
+	};
+};
+
 /// <summary>
 /// This struct is used to extract the hi bits out of a byte.
 /// </summary>
@@ -153,7 +163,7 @@ union header_s
 	/// <summary>
 	/// Placeholder data to ensure the size for the header and for easier interoperability with the filestream system.
 	/// </summary>
-	char _data[16] = "               ";
+	char _data[16];
 	struct _header
 	{
 		/// <summary>
@@ -200,7 +210,7 @@ public:
 	u8* PRG_ROM;
 
 	u32 CHR_s;
-	u8 CHR_ROM;
+	u8* CHR_ROM;
 
 	u8* trainer; // Either 0 or 512 bytes, but we represent it as null or new u8[512].
 
@@ -210,6 +220,7 @@ public:
 
 
 	iNesFile(const char* filename);
+	~iNesFile();
 private:
 
 
