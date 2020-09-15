@@ -139,15 +139,21 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Bit.cpp" />
     <ClCompile Include="Bus.cpp" />
+    <ClCompile Include="cardridge.cpp" />
     <ClCompile Include="Core6502.cpp" />
     <ClCompile Include="DisAssemble.cpp" />
+    <ClCompile Include="iNesFile.cpp" />
     <ClCompile Include="TestMain.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Bit.h" />
     <ClInclude Include="Bus.h" />
+    <ClInclude Include="cardridge.h" />
     <ClInclude Include="Core6502.h" />
     <ClInclude Include="DisAssemble.h" />
+    <ClInclude Include="iNesFile.h" />
     <ClInclude Include="Types.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

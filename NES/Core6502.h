@@ -1,6 +1,7 @@
 #pragma once
 #include "Bus.h"
 #include "Types.h"
+#include "iNesFile.h"
 // This #define command defines the Template for opcodes and make the code more readable
 // Every opcode definition consists of an function that executes and then returns the cycles it took.
 #define OPCODE(x) void x();
@@ -41,20 +42,6 @@
 #define ISC XXX
 #endif
 
-
-/// <summary>
-/// The bit class is used to set, clear get, and toggle a bit in a union.
-/// </summary>
-template <int bitPlace, typename unionType = u8>
-class Bit
-{
-	unionType data;
-public:
-	bool Get() { return (data >> bitPlace) & 1; }
-	void Set() { data |= 1 << bitPlace; }
-	void Clear() { data &= ~(1 << bitPlace); }
-	void Toggle() { data ^= 1 << bitPlace; }
-};
 
 class Bus;
 

@@ -6,5 +6,7 @@
 
 int main()
 {
-	
+	iNesFile smb("cpu.nes");
+	std::cout << smb.HEADER.header.ToString();
+	std::cin.get();
 }
