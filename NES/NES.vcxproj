@@ -147,6 +147,7 @@
     <ClCompile Include="DisAssemble.cpp" />
     <ClCompile Include="iNesFile.cpp" />
     <ClCompile Include="Mapper.cpp" />
+    <ClCompile Include="Ram.cpp" />
     <ClCompile Include="TestMain.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -158,6 +159,7 @@
     <ClInclude Include="DisAssemble.h" />
     <ClInclude Include="iNesFile.h" />
     <ClInclude Include="Mapper.h" />
+    <ClInclude Include="Ram.h" />
     <ClInclude Include="Types.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
