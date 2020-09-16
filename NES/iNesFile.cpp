@@ -8,7 +8,7 @@ iNesFile::iNesFile(const char* filename)
 	if (file.is_open())
 	{
 		file.read(HEADER._data, 16);
-
+		trainer = nullptr;
 		if (HEADER.header.f6.Trainer.Get())
 		{
 			file.read((char*)trainer, 512);
@@ -22,10 +22,16 @@ iNesFile::iNesFile(const char* filename)
 		PRG_ROM = new u8[PRG_s];
 		CHR_ROM = new u8[CHR_s];
 
+		InstRom = nullptr;
+		PROM	= nullptr;
+
 		file.read((char*)PRG_ROM, PRG_s);
 		file.read((char*)CHR_ROM, CHR_s);
-
-
+	}
+	else
+	{
+		std::cout << "Something went terribly wrong!!!" << std::endl;
+		for(;;) {}
 	}
 	file.close();
 }

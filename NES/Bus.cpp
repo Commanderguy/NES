@@ -3,7 +3,10 @@
 
 u8 Bus::Read(ptr loc)
 {
-	return PLACEHOLDERRAM[loc];
+	u8 data = 0x00;
+
+
+	return data;
 }
 
 void Bus::Write(ptr loc, u8 data)

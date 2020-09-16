@@ -36,6 +36,12 @@
     <ClCompile Include="iNesFile.cpp">
       <Filter>Quelldateien</Filter>
     </ClCompile>
+    <ClCompile Include="Mapper.cpp">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="Device.cpp">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Types.h">
@@ -57,6 +63,12 @@
       <Filter>Headerdateien</Filter>
     </ClInclude>
     <ClInclude Include="iNesFile.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="Mapper.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="Device.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
   </ItemGroup>
