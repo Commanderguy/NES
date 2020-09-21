@@ -1,5 +1,20 @@
 #include "iNesFile.h"
-
+u8 iNesFile::Read(ptr loc)
+{
+	return u8();
+}
+bool iNesFile::Write(ptr loc, u8 data)
+{
+	return false;
+}
+u8 iNesFile::ppuRead(ptr loc)
+{
+	return u8();
+}
+bool iNesFile::ppuWrite(ptr loc, u8 data)
+{
+	return false;
+}
 iNesFile::iNesFile(const char* filename)
 {
 	std::ifstream file;
@@ -35,7 +50,6 @@ iNesFile::iNesFile(const char* filename)
 	}
 	file.close();
 }
-
 iNesFile::~iNesFile()
 {
 	delete[] PRG_ROM;

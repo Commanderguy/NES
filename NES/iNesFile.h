@@ -200,7 +200,6 @@ union header_s
 
 
 
-
 class iNesFile
 {
 public:
@@ -218,6 +217,12 @@ public:
 
 	u8* PROM; 
 
+
+	u8 Read(ptr loc);
+	bool Write(ptr loc, u8 data);
+
+	u8 ppuRead(ptr loc);
+	bool ppuWrite(ptr loc, u8 data);
 
 	iNesFile(const char* filename);
 	~iNesFile();
