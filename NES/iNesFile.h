@@ -8,6 +8,7 @@
 
 #include "Types.h"
 #include "Bit.h"
+#include "Mapper.h"
 
 union TwoSetShort
 {
@@ -217,6 +218,8 @@ public:
 
 	u8* PROM; 
 
+	
+
 
 	u8 Read(ptr loc);
 	bool Write(ptr loc, u8 data);
@@ -228,6 +231,7 @@ public:
 	~iNesFile();
 private:
 
+	std::shared_ptr<Mapper> _mapper;
 
 protected:
 	

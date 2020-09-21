@@ -33,7 +33,7 @@
     <ClCompile Include="iNesFile.cpp">
       <Filter>Quelldateien</Filter>
     </ClCompile>
-    <ClCompile Include="Mapper.cpp">
+    <ClCompile Include="NROM.cpp">
       <Filter>Quelldateien</Filter>
     </ClCompile>
   </ItemGroup>
@@ -60,6 +60,9 @@
       <Filter>Headerdateien</Filter>
     </ClInclude>
     <ClInclude Include="Ram.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="NROM.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
   </ItemGroup>

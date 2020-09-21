@@ -45,11 +45,15 @@ iNesFile::iNesFile(const char* filename)
 	}
 	else
 	{
-		std::cout << "Something went terribly wrong!!!" << std::endl;
+		std::cout << "Could not open file. Please specify absolute, not relative path." << std::endl;
+
+		// The perfect crash, probably replace through file not found exception and show on window but for not gui-environment this will do
 		for(;;) {}
 	}
 	file.close();
 }
+
+
 iNesFile::~iNesFile()
 {
 	delete[] PRG_ROM;
